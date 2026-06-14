@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SŠITAS - Absence</title>
+    <style>
+        /* CSS - Stylování stránky */
+        :root {
+            --primary-blue: #0056b3;
+            --light-blue: #e0f0ff;
+            --light-yellow: #fff3cd;
+            --border-color: #dee2e6;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Modrý horní pruh */
+        header {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+
+        /* Hlavní kontejner */
+        main {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .intro-text {
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .logout-link {
+            color: var(--primary-blue);
+            text-decoration: underline;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-color);
+            margin: 25px 0;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        /* Rozvrh a Omluvení - Grid */
+        .schedule-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 40px;
+            gap: 15px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .schedule-row:last-child {
+            border-bottom: none;
+        }
+
+        .date-col {
+            font-weight: bold;
+        }
+
+        .val-col {
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+
+        .bg-yellow { background-color: var(--light-yellow); }
+        .bg-blue { background-color: var(--light-blue); }
+        
+        .info-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-weight: bold;
+            font-family: serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .info-btn:hover {
+            background-color: #004494;
+        }
+
+        /* Omluvení sekce */
+        .checkbox-group {
+            background: #fdfdfd;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+
+        .checkbox-group label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.1);
+        }
+
+        .input-col input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .input-col input:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* Spodní akce */
+        #signature-section {
+            display: none;
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .signature-text {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            animation: pulse 1.5s infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Pulzování tlačítka */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 86, 179, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 86, 179, 0); }
+        }
+
+        /* Modální okno pro INFO */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .modal-content p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+
+        /* Závěrečná obrazovka */
+        #success-screen {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        #success-screen h2 {
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        /* Responzivita pro telefony */
+        @media (max-width: 600px) {
+            .schedule-row {
+                grid-template-columns: 1fr auto;
+                grid-template-areas: 
+                    "date info"
+                    "val val";
+                gap: 8px;
+                padding: 15px 0;
+            }
+            .date-col { grid-area: date; }
+            .info-btn { grid-area: info; justify-self: end; }
+            .val-col, .input-col { grid-area: val; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        SŠITAS &gt; ITASID &gt; Absence &gt; Ref &gt; Nová &gt; Automaticky (červ...
+    </header>
+
+    <main id="app-content">
+        <p class="intro-text">
+            Níže přikládáme bližší informace o ukončení školního roku 2025/2026, a prosíme vás o spolupráci a kontrolu záložky absence.
+        </p>
+        <p class="user-info">
+            Jste přihlášeni jako: Hana Rudolfská (Rudolfský Adam) 
+            <a href="http://ssitas.cz/logout" class="logout-link">Odhlásit se</a>
+        </p>
+
+        <hr>
+
+        <h2>Rozvrhy pro ukončení školního roku:</h2>
+        <div id="schedule-container">
+            </div>
+
+        <hr>
+
+        <h2>Omluvení absence</h2>
+        
+        <div class="checkbox-group" id="checkboxes">
+            <label><input type="checkbox" class="req-check"> Souhlasím s omluvením absence [*povinné]</label>
+            <label><input type="checkbox" class="req-check"> Použijte náhodnou šablonu [pokud nezvolíte tuto možnost, bude nutné zadat omluvení absence pro jednotlivé dny ručně!]</label>
+            <label><input type="checkbox" class="req-check"> Podepsat [*povinné]</label>
+            <label><input type="checkbox" class="req-check"> Souhlasím, že jsem zákonný zástupce / student 18 + [*povinné]</label>
+            <label><input type="checkbox" class="req-check"> Vyjadřuji souhlas s řádným zadáním absence [*povinné]</label>
+        </div>
+
+        <div id="absence-container">
+            </div>
+
+        <div id="signature-section">
+            <div class="signature-text">Podepsal/a: Rudolfská Hana</div>
+            <button class="submit-btn" onclick="submitAbsence()">Omluvit &rarr;</button>
+        </div>
+    </main>
+
+    <main id="success-screen">
+        <h2>Vyřízeno</h2>
+        <p>Je to v pořádku. Budeme vás brzy kontaktovat, abychom si ověřili, zda omluvenku zasíláte skutečně vy. Vaše ověřovací údaje jsou: Hana Rudolfská, 14.6.2026. Jakmile bude absence úspěšně vyřízena, potvrdíme ji e-mailem.</p>
+    </main>
+
+    <div class="modal-overlay" id="info-modal">
+        <div class="modal-content">
+            <p id="modal-text"></p>
+            <button class="modal-close" onclick="closeModal()">Rozumím</button>
+        </div>
+    </div>
+
+    <script>
+        /* JavaScript - Logika stránky */
+
+        // Data pro dny
+        const daysData = [
+            { date: "15. června 2026", val: "-", type: "dash" },
+            { date: "16. června 2026", val: "-", type: "dash" },
+            { date: "17. června 2026", val: "-", type: "dash" },
+            { date: "18. června 2026", val: "-", type: "dash" },
+            { date: "19. června 2026", val: "Školní akce & klasický rozvrh hodin", type: "event" },
+            { date: "20. června 2026", val: "undefined", type: "undef" },
+            { date: "21. června 2026", val: "undefined", type: "undef" },
+            { date: "22. června 2026", val: "-", type: "dash" },
+            { date: "23. června 2026", val: "-", type: "dash" },
+            { date: "24. června 2026", val: "-", type: "dash", special: true },
+            { date: "25. června 2026", val: "-", type: "dash" },
+            { date: "26. června 2026", val: "Slavnostní ukončení šk.r. & rozlučka s učiteli & předání vysvědčení", type: "end" }
+        ];
+
+        // Texty pro modální okno
+        const infoTexts = {
+            "dash": "Tento den studenti již nejdou do školy. Omluvení absence: Ano, nutné. Děkujeme za pochopení.",
+            "undef": "Víkendy / státní svátky",
+            "event": "Přinést dárky učitelům pro závěr šk. r. (předání během dne / nejpozději do 14:00), výuka dle rozvrhu Stálý",
+            "end": "7:30 sraz ve škole (studenti mají rozdané učebny). Proběhne slavnostní ukončení školního roku s třídními učiteli, hromadná rozlučka se všemi učiteli a přivítáme na naší škole 2 nové pedagogické kolegy (každý student si připraví jeden až 2 dárečky; max. 2 věci). Děkujeme. Následně předání vysvědčení ředitelem školy do 9:30. Ukončení: 9:30 - 10:00."
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const scheduleContainer = document.getElementById('schedule-container');
+            const absenceContainer = document.getElementById('absence-container');
+
+            daysData.forEach((day, index) => {
+                // Třída pro barevný podkres
+                let bgClass = "";
+                if (day.type === "dash") bgClass = "bg-yellow";
+                if (day.type === "undef") bgClass = "bg-blue";
+
+                // Vykreslení horního rozvrhu
+                const scheduleRow = document.createElement('div');
+                scheduleRow.className = 'schedule-row';
+                scheduleRow.innerHTML = `
+                    <div class="date-col">${day.date}:</div>
+                    <div class="val-col ${bgClass}">${day.val}</div>
+                    <button class="info-btn" onclick="openModal('${day.type}')">i</button>
+                `;
+                scheduleContainer.appendChild(scheduleRow);
+
+                // Vykreslení spodního formuláře pro omluvenky
+                const absenceRow = document.createElement('div');
+                absenceRow.className = 'schedule-row';
+                
+                let inputHtml = "";
+                if (day.type === "dash") {
+                    // Pomlčky - zašedlé textové pole
+                    inputHtml = `<input type="text" id="input-${index}" disabled>`;
+                } else {
+                    // Ostatní - předvyplněná hodnota
+                    inputHtml = `<input type="text" value="${day.val}">`;
+                }
+
+                absenceRow.innerHTML = `
+                    <div class="date-col">${day.date}:</div>
+                    <div class="input-col">${inputHtml}</div>
+                `;
+                absenceContainer.appendChild(absenceRow);
+            });
+
+            // Přidání posluchačů na zaškrtávací políčka
+            const checkboxes = document.querySelectorAll('.req-check');
+            checkboxes.forEach(cb => cb.addEventListener('change', checkFormState));
+        });
+
+        // Kontrola zaškrtnutí políček
+        function checkFormState() {
+            const checkboxes = document.querySelectorAll('.req-check');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            const signatureSection = document.getElementById('signature-section');
+
+            daysData.forEach((day, index) => {
+                if (day.type === "dash") {
+                    const inputField = document.getElementById(`input-${index}`);
+                    if (allChecked) {
+                        inputField.disabled = false;
+                        // Podmínka pro 24. června (Lékař), zbytek Nemoc
+                        inputField.value = day.special ? "Lékař" : "Nemoc"; 
+                    } else {
+                        inputField.disabled = true;
+                        inputField.value = "";
+                    }
+                }
+            });
+
+            // Zobrazení/skrytí podpisu a tlačítka
+            signatureSection.style.display = allChecked ? "block" : "none";
+        }
+
+        // Ovládání modálního okna (Info tlačítka)
+        const modal = document.getElementById('info-modal');
+        const modalText = document.getElementById('modal-text');
+
+        function openModal(type) {
+            modalText.innerText = infoTexts[type];
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Finální odeslání
+        function submitAbsence() {
+            document.getElementById('app-content').style.display = 'none';
+            document.getElementById('success-screen').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
